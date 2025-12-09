@@ -326,29 +326,44 @@ from sklearn.metrics import accuracy_score, f1_score
 
 class MajorityVotingEnsemble:
     def __init__(self, model_names):
-        self.model_names = model_names # 예: ['pytorch_nn', 'xgboost', 'catboost']
-
+        self.model_names = model_names  # 예: ['pytorch_nn', 'xgboost', 'catboost']
 
     def predict(self, df_pred):
         pred_cols = [f"pred_{m}" for m in self.model_names]
         return df_pred[pred_cols].mode(axis=1)[0]
 
+    def compute_disagreement_rate(self, df_pred):
+        pred_cols = [f"pred_{m}" for m in self.model_names]
+        preds = df_pred[pred_cols].values
+
+        disagreement_rates = []
+        for row in preds:
+            values, counts = np.unique(row, return_counts=True)
+            max_count = counts.max()
+            total = len(row)
+            disagreement = 1 - (max_count / total)
+            disagreement_rates.append(disagreement)
+
+        return np.mean(disagreement_rates)
 
     def evaluate(self, df_pred, true_label_col="true_label"):
         y_true = df_pred[true_label_col]
         y_pred = self.predict(df_pred)
 
-
         acc = accuracy_score(y_true, y_pred)
         f1 = f1_score(y_true, y_pred)
-
+        disagreement_rate = self.compute_disagreement_rate(df_pred)
 
         print("\n==============================")
         print("🔮 Majority Voting Ensemble 결과")
         print("==============================")
         print(f"Accuracy: {acc:.4f}")
         print(f"F1 Score: {f1:.4f}")
+        print(f"Disagreement Rate: {disagreement_rate:.4f}")
         print("==============================\n")
 
-
-        return {"accuracy": acc, "f1": f1}
+        return {
+            "accuracy": acc,
+            "f1": f1,
+            "disagreement_rate": disagreement_rate
+        }
