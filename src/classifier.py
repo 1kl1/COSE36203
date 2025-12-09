@@ -128,15 +128,18 @@ def prepare_features(df, device="cpu"):
     }
 
 
-# -----------------------------
-# Evaluation
-# -----------------------------
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, matthews_corrcoef
+
 def evaluate_model(y_true, y_pred):
+    """
+    Evaluate predictions using multiple metrics: Accuracy, Precision, Recall, F1-Score, MCC
+    """
     return {
         'accuracy': accuracy_score(y_true, y_pred),
         'precision': precision_score(y_true, y_pred),
         'recall': recall_score(y_true, y_pred),
-        'f1': f1_score(y_true, y_pred)
+        'f1': f1_score(y_true, y_pred),
+        'mcc': matthews_corrcoef(y_true, y_pred)
     }
 
 
@@ -159,9 +162,7 @@ def train_authorship_classifiers(train_df, test_df, use_gpu=True):
 
     models = {}
     results = []
-    # -----------------------------
-    # LightGBM GPU
-    # -----------------------------
+
     print("=== Training LightGBM (GPU) ===")
 
     lgb_model = lgb.LGBMClassifier(
@@ -189,8 +190,14 @@ def train_authorship_classifiers(train_df, test_df, use_gpu=True):
         'model': 'LightGBM',
         'train_acc': metrics_train['accuracy'],
         'test_acc': metrics_test['accuracy'],
+        'train_precision': metrics_train['precision'],
+        'test_precision': metrics_test['precision'],
+        'train_recall': metrics_train['recall'],
+        'test_recall': metrics_test['recall'],
         'train_f1': metrics_train['f1'],
         'test_f1': metrics_test['f1'],
+        'train_mcc': metrics_train['mcc'],
+        'test_mcc': metrics_test['mcc'],
         "pred_test": pred_test
     })
 
@@ -218,11 +225,17 @@ def train_authorship_classifiers(train_df, test_df, use_gpu=True):
 
     models['xgboost'] = xgb_model
     results.append({
-        'model': 'XGBoost',
+        'model': 'LightGBM',
         'train_acc': metrics_train['accuracy'],
         'test_acc': metrics_test['accuracy'],
+        'train_precision': metrics_train['precision'],
+        'test_precision': metrics_test['precision'],
+        'train_recall': metrics_train['recall'],
+        'test_recall': metrics_test['recall'],
         'train_f1': metrics_train['f1'],
         'test_f1': metrics_test['f1'],
+        'train_mcc': metrics_train['mcc'],
+        'test_mcc': metrics_test['mcc'],
         "pred_test": pred_test
     })
 
@@ -247,11 +260,17 @@ def train_authorship_classifiers(train_df, test_df, use_gpu=True):
 
     models['catboost'] = cat_model
     results.append({
-        'model': 'CatBoost',
+        'model': 'LightGBM',
         'train_acc': metrics_train['accuracy'],
         'test_acc': metrics_test['accuracy'],
+        'train_precision': metrics_train['precision'],
+        'test_precision': metrics_test['precision'],
+        'train_recall': metrics_train['recall'],
+        'test_recall': metrics_test['recall'],
         'train_f1': metrics_train['f1'],
         'test_f1': metrics_test['f1'],
+        'train_mcc': metrics_train['mcc'],
+        'test_mcc': metrics_test['mcc'],
         "pred_test": pred_test
     })
 
@@ -283,11 +302,17 @@ def train_authorship_classifiers(train_df, test_df, use_gpu=True):
 
     models['simple_nn'] = nn_model
     results.append({
-        'model': 'SimpleNN',
+        'model': 'LightGBM',
         'train_acc': metrics_train['accuracy'],
         'test_acc': metrics_test['accuracy'],
+        'train_precision': metrics_train['precision'],
+        'test_precision': metrics_test['precision'],
+        'train_recall': metrics_train['recall'],
+        'test_recall': metrics_test['recall'],
         'train_f1': metrics_train['f1'],
         'test_f1': metrics_test['f1'],
+        'train_mcc': metrics_train['mcc'],
+        'test_mcc': metrics_test['mcc'],
         "pred_test": pred_test
     })
 
