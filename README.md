@@ -69,8 +69,8 @@ from bert import BertVectorizer
 from specter import SpecterVectorizer
 
 # Load authorship verification dataset
-train_dataset = load_dataset("swan07/authorship-verification", split="train[:5000]")
-test_dataset = load_dataset("swan07/authorship-verification", split="test[:1000]")
+train_dataset = load_dataset("swan07/authorship-verification", split="train[:80000]")
+test_dataset = load_dataset("swan07/authorship-verification", split="test[:6000]")
 
 # Generate BERT embeddings
 bert_vectorizer = BertVectorizer()
